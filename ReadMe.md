@@ -4,3 +4,6 @@ Flask Server:
 2) Install Packages using pip install -r requirements.txt
 3) Configure your Ethereum node RPC end point in Configure.py inside Configure Package
 4) Run Application : python Web3PyFlask.py
+
+Steps to Run: Front end
+1) ng serve
