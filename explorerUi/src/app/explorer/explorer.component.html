@@ -1,0 +1,165 @@
+<div class='container'>
+  <div class=" container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row header">
+          <div class="col-md-1" [hidden]="blockList.length === 0">
+            <button (click)="onBack(blockList[0].number)">
+              <i class="fas fa-arrow-left"></i>&nbsp;Back
+            </button>
+          </div>
+          <div class="col-md-10">
+              <div class="text-center">
+                  <span>
+                      <img src="../../assets/ETH-512.png" style="height: 60px; margin-top: -19px;">
+                  </span>
+                  <span style="font-size: 32px; font-weight: 500;">Ethereum Block Explorer</span>
+              </div>
+          </div>
+          <div class="col-md-1" *ngIf="blockList.length > 0">
+              <div class="float-right">
+                <button (click)="onNext(blockList[blockList.length - 1].number)">
+                  <i class="fas fa-arrow-right"></i>&nbsp;Next
+                </button>
+              </div>
+          </div>
+        </div>
+        <div class="viewArea text-center" *ngIf="blockList.length === 0">
+          <div class="loader"></div>
+        </div>
+
+
+        <div class="row latestTagDiv">
+          <div class="col-md-9">
+            <input type="text" placeholder="Search by Block Number" [(ngModel)]='searchText' class="searchBar">
+            <button class="searchButton" (click)='getBlockById(searchText)'><small>Search</small></button>
+          </div>
+          <div class="col-md-3 text-right">
+              <span class="latestTag" (click)="getLatestBlock()">
+                  <small>Latest Blocks&nbsp;<i class="far fa-hand-point-right"></i></small>
+              </span>
+          </div>
+        </div>
+
+        <div class="viewArea blink" *ngIf="blockList.length > 0">
+            <div class='card center text-center pt-05' *ngFor='let block of blockList'>
+                <div class="row">
+                  <div class="col-md-6 text-left">
+                        <small>Block no&nbsp;<i class="fas fa-cube"></i></small><strong>&nbsp;&nbsp;{{ block.number }}</strong>
+                  </div>
+                  <div class="col-md-6 text-right">
+                        <small>Gas used&nbsp;<i class="fas fa-fire"></i></small><strong>&nbsp;&nbsp;{{ block.gasUsed }}</strong>
+                  </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-md-9 text-left">
+                        <small>Block Hash&nbsp;<i class="fas fa-lock"></i></small><strong>&nbsp;&nbsp;{{ block.hash }}</strong>
+                    </div>
+                    <div class="col-md-3 text-right">
+                      <span class="link" (click)="blockMoreDetails(block)" data-toggle="modal" data-target="#blockModal">
+                        <i class="fas fa-info-circle"></i>&nbsp;&nbsp;More Details
+                      </span>
+                    </div>
+                </div>
+                <br/>
+                <div *ngIf="block.transactions.length > 0">
+                  <p class="text-left"><strong>Transactions&nbsp;<i class="fas fa-exchange-alt"></i></strong></p>
+                  <p class="card" *ngFor="let transactions of block.transactions">
+                    <span class="link" (click)="getTransactionById(transactions)" data-toggle="modal" data-target="#transactionModal">{{ transactions }}</span>
+                  </p>
+                </div>
+
+              </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transaction More Details modal -->
+    <div class="modal fade" id="transactionModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="myModalLabel">Transaction Details</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <dl class="dl-horizontal">
+              <dt> <i class="fas fa-cube"></i>&nbsp;Block No</dt>
+              <dd style="margin-left: 2%">{{ detailedTransaction.blockNumber }}</dd>
+            </dl>
+            <dl class="dl-horizontal">
+              <dt><i class="fas fa-fire"></i>&nbsp;Gas Used</dt>
+              <dd  style="margin-left: 2%">{{ detailedTransaction.gas }}</dd>
+            </dl>
+            <dl class="dl-horizontal">
+              <dt><i class="fas fa-lock"></i>&nbsp;Block Hash</dt>
+              <dd  style="margin-left: 2%">{{ detailedTransaction.blockHash }}</dd>
+            </dl>
+            <dl class="dl-horizontal">
+              <dt><i class="fas fa-lock"></i>&nbsp;Transaction Hash</dt>
+              <dd style="margin-left: 2%">{{ detailedTransaction.hash }}</dd>
+            </dl>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" data-dismiss="modal">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Block More Details modal -->
+    <div class="modal fade" id="blockModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="myModalLabel">Block Details</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+
+              <dl class="dl-horizontal">
+                <dt> <i class="fas fa-cube"></i>&nbsp;Block No</dt>
+                <dd style="margin-left: 2%">{{ detailedBlock.number }}</dd>
+              </dl>
+              <dl class="dl-horizontal">
+                <dt><i class="fas fa-fire"></i>&nbsp;Gas Used</dt>
+                <dd  style="margin-left: 2%">{{ detailedBlock.gasUsed }}</dd>
+              </dl>
+              <dl class="dl-horizontal">
+                <dt><i class="fas fa-lock"></i>&nbsp;Block Hash</dt>
+                <dd  style="margin-left: 2%">{{ detailedBlock.hash }}</dd>
+              </dl>
+              <dl class="dl-horizontal">
+                <dt><i class="fas fa-lock"></i>&nbsp;Parent Hash</dt>
+                <dd style="margin-left: 2%">{{ detailedBlock.parentHash }}</dd>
+              </dl>
+              <dl class="dl-horizontal">
+                <dt><i class="fas fa-prescription"></i>&nbsp;Transactions Root</dt>
+                <dd style="margin-left: 2%">{{ detailedBlock.transactionsRoot }}</dd>
+              </dl>
+              <dl class="dl-horizontal">
+                <dt><i class="fas fa-prescription"></i>&nbsp;State Root</dt>
+                <dd style="margin-left: 2%">{{ detailedBlock.stateRoot }}</dd>
+              </dl>
+              <dl class="dl-horizontal">
+                <dt><i class="fas fa-prescription"></i>&nbsp;Receipts Root</dt>
+                <dd style="margin-left: 2%">{{ detailedBlock.receiptsRoot }}</dd>
+              </dl>
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" data-dismiss="modal">Done</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  </div>
+</div>
